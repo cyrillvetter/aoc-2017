@@ -12,11 +12,7 @@ main = do
     print $ part2 input
 
 part1 :: Int -> Int
-part1 num =
-    let oddSquares = map (^2) $ filter odd [1..]
-        rings = takeWhile (<= num) oddSquares
-        ringAxes = take 4 $ dropWhile (<= last rings) generateAxes
-    in length rings + minimum (map (\p -> abs (num - p)) ringAxes)
+part1 num = calcDistance (generateCoordinates !! (num - 2))
 
 part2 :: Int -> Int
 part2 num = go generateCoordinates $ M.singleton (0, 0) 1
@@ -27,11 +23,8 @@ part2 num = go generateCoordinates $ M.singleton (0, 0) 1
             | otherwise = go cs (M.insert c neighbourSums grid)
             where neighbourSums = sum $ mapMaybe (`M.lookup` grid) $ getNeighbours c
 
-generateAxes :: [Int]
-generateAxes = scanl (+) 1 $ gen 1
-    where
-        gen :: Int -> [Int]
-        gen num = num : replicate 3 (num + 1) ++ gen (num + 2)
+calcDistance :: Coord -> Int
+calcDistance (x, y) = abs x + abs y
 
 generateCoordinates :: [Coord]
 generateCoordinates = gen (generateMoves 1) (0, 0) R
